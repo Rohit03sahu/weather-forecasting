@@ -23,14 +23,14 @@ namespace weatherforecast.Controllers
 
         [HttpGet]
         [Route("forecastbytimeline")]
-        public async Task<ActionResult<WeatherForecasts>> GetWeatherForecast(string location, WeatherTimeLineEnum timeline)
+        public async Task<ActionResult<WeatherForecasts>> GetWeatherForecast(List<string> location, WeatherTimeLineEnum timeline)
         {
             WeatherForecasts weatherForecasts = new WeatherForecasts() { IsSuccess=true, reason= new List<string>() };
-            if (string.IsNullOrEmpty(location)) { weatherForecasts.IsSuccess=false; weatherForecasts.reason.Add("Invalid Location"); }
+            if (location == null && location.Count <=1 ) { weatherForecasts.IsSuccess=false; weatherForecasts.reason.Add("Invalid Location / atleast two location should be there for delta changes"); }
 
             if (weatherForecasts.IsSuccess)
             {                
-                weatherForecasts= await _weatherForecastProvider.FetchWeatherForecast(new WeatherForecastDto() { Locations= new List<string>() { location }, TimeLine=timeline });
+                weatherForecasts= await _weatherForecastProvider.FetchWeatherForecast(new WeatherForecastDto() { Locations= location, TimeLine=timeline });
             }
             return Ok(weatherForecasts);
         }

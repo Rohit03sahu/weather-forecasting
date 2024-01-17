@@ -5,35 +5,43 @@ namespace weatherforecast.Mapper
 {
     public class WeatherForecastMapper
     {
-        public static WeatherForecasts MapMinutelyForecast(Weather weather)
+        public static List<WeatherForecast> MapMinutelyForecast(Weather weather)
         {
-            WeatherForecasts weatherForecasts = new WeatherForecasts() { WeatherForecast= new List<WeatherForecast>() };
-            foreach(var report in weather.timelines.minutely)
+            List<WeatherForecast> weatherForecast = new List<WeatherForecast>();
+            foreach (var report in weather.timelines.minutely)
             {
-                weatherForecasts.WeatherForecast.Add(new WeatherForecast { Location= weather.location.name, TimeStamp= report.time, TempratureInC= report.values.temperature.ToString(), TempratureInF="" });
+                weatherForecast.Add
+                    (
+                    new WeatherForecast { Location= weather.location.name, TimeStamp= report.time, TempratureInC= report.values.temperature, TempratureInF= convertCelToF(report.values.temperature) });
             }
-            return weatherForecasts;
+            return weatherForecast;
 
         }
         
-        public static WeatherForecasts MapHourlyForecast(Weather weather)
+        public static List<WeatherForecast> MapHourlyForecast(Weather weather)
         {
-            WeatherForecasts weatherForecasts = new WeatherForecasts() { WeatherForecast= new List<WeatherForecast>() };
+            List<WeatherForecast> weatherForecast = new List<WeatherForecast>() ;
             foreach (var report in weather.timelines.hourly)
             {
-                weatherForecasts.WeatherForecast.Add(new WeatherForecast { Location= weather.location.name, TimeStamp= report.time, TempratureInC= report.values.temperature.ToString(), TempratureInF="" });
+                weatherForecast.Add(new WeatherForecast { Location= weather.location.name, TimeStamp= report.time, TempratureInC= report.values.temperature, TempratureInF=convertCelToF(report.values.temperature) });
             }
-            return weatherForecasts;
+            return weatherForecast;
         }
 
-        public static WeatherForecasts MapDailyForecast(Weather weather)
+        public static List<WeatherForecast> MapDailyForecast(Weather weather)
         {
-            WeatherForecasts weatherForecasts = new WeatherForecasts() { WeatherForecast= new List<WeatherForecast>() };
+            List<WeatherForecast> weatherForecast = new List<WeatherForecast>();
             foreach (var report in weather.timelines.daily)
             {
-                weatherForecasts.WeatherForecast.Add(new WeatherForecast { Location= weather.location.name, TimeStamp= report.time, TempratureInC= report.values.temperature.ToString(), TempratureInF="" });
+                weatherForecast.Add(new WeatherForecast { Location= weather.location.name, TimeStamp= report.time, TempratureInC= report.values.temperature, TempratureInF=convertCelToF(report.values.temperature) });
             }
-            return weatherForecasts;
+            return weatherForecast;
         }
+        public static double convertCelToF(double celsius)
+        {
+            var value = (9/5 * celsius) + 32;
+            return value;
+        }
+
     }
 }

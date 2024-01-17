@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 using weatherforecast.Enums;
 using weatherforecast.Mapper;
 using weatherforecast.Model.Common;
@@ -18,32 +19,64 @@ namespace weatherforecast.Provider
         }
         public async Task<WeatherForecasts> FetchWeatherForecast(WeatherForecastDto request)
         {
-            WeatherForecasts weatherforecasts = new WeatherForecasts() { WeatherForecast= new List<WeatherForecast>(), IsSuccess=true };
-
-            var response = await _weatherRepository.FetchWeatherDetailsByLocations(request.Locations);
-            var forecastString = await response.Content.ReadAsStringAsync();
-            if (response != null && !string.IsNullOrEmpty(forecastString))
+            Dictionary<string, List<WeatherForecast>> keyValuePairs = new Dictionary<string, List<WeatherForecast>>();
+            foreach (var loc in request.Locations)
             {
-                var forecastJson = JsonConvert.DeserializeObject<Weather>(forecastString);
-                
-                if(request.TimeLine.ToString()== WeatherTimeLineEnum.Minutely.ToString())
-                    weatherforecasts= WeatherForecastMapper.MapMinutelyForecast(forecastJson);
-                
-                if (request.TimeLine.ToString()== WeatherTimeLineEnum.Hourly.ToString())
-                    weatherforecasts= WeatherForecastMapper.MapMinutelyForecast(forecastJson);
 
-                if (request.TimeLine.ToString()== WeatherTimeLineEnum.Daily.ToString())
-                    weatherforecasts= WeatherForecastMapper.MapMinutelyForecast(forecastJson);
+                var response = await _weatherRepository.FetchWeatherDetailsByLocations(new List<string>() { loc });
+                var forecastString = await response.Content.ReadAsStringAsync();
+                List<WeatherForecast> forecasts = new List<WeatherForecast>();
+                if (response != null && !string.IsNullOrEmpty(forecastString))
+                {
+                    var forecastJson = JsonConvert.DeserializeObject<Weather>(forecastString);
+                    
+                    if (request.TimeLine.ToString()== WeatherTimeLineEnum.Minutely.ToString())
+                        forecasts= WeatherForecastMapper.MapMinutelyForecast(forecastJson);
+
+                    if (request.TimeLine.ToString()== WeatherTimeLineEnum.Hourly.ToString())
+                        forecasts= WeatherForecastMapper.MapMinutelyForecast(forecastJson);
+
+                    if (request.TimeLine.ToString()== WeatherTimeLineEnum.Daily.ToString())
+                        forecasts= WeatherForecastMapper.MapMinutelyForecast(forecastJson);
+                }
+                keyValuePairs.Add(loc, forecasts);
             }
 
-            if (weatherforecasts.WeatherForecast == null && weatherforecasts.WeatherForecast.Count<=0)
+            var weatherforecasts= await getDeltaChanges(keyValuePairs[request.Locations[0]], keyValuePairs[request.Locations[1]]);
+
+            if (weatherforecasts.Source == null && weatherforecasts.Source.Count<=0 )
             {
                 weatherforecasts.IsSuccess= true;
-                weatherforecasts.reason=new List<string>() { "No data found"};
+                weatherforecasts.reason=new List<string>() { "No data found for source"};
+            }
+            if (weatherforecasts.Destination == null && weatherforecasts.Destination.Count<=0)
+            {
+                weatherforecasts.IsSuccess= true;
+                weatherforecasts.reason=new List<string>() { "No data found for destination" };
             }
 
             return weatherforecasts;
 
+        }
+
+        public async Task<WeatherForecasts> getDeltaChanges(List<WeatherForecast> source, List<WeatherForecast> destination)
+        {
+            WeatherForecasts weatherforecasts = new WeatherForecasts() 
+            { 
+                    Source= source, 
+                    Delta= new List<WeatherForecast>(),
+                    Destination= destination, 
+                    IsSuccess=true
+            };
+
+            var deltaChanges = from s in source
+                               join r in destination on s.Location equals r.Location
+                               where s.TimeStamp.Value == r.TimeStamp.Value
+                               select new { loc= s.Location, timeStamp=s.TimeStamp, deltaC= s.TempratureInC - r.TempratureInC, deltaF= s.TempratureInF - r.TempratureInF };
+            foreach (var s in deltaChanges ) {
+                weatherforecasts.Delta.Add( new WeatherForecast() { Location= s.loc, TempratureInC=s.deltaC, TempratureInF= s.deltaF, TimeStamp=s.timeStamp });
+            }
+            return weatherforecasts;
         }
     }
 }

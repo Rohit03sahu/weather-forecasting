@@ -38,6 +38,21 @@ export class FetchData extends Component {
     );
   }
 
+  static renderLocationData(locations) {
+    return (
+      
+       <select>
+           <option value="Select">--Select--</option>
+            { 
+                locations.map(location => 
+                    <option value={location}>{location}</option>
+        
+            )}
+       </select>
+    );
+  }
+
+
   render() {
     let contents = this.state.loading
       ? <p><em>Loading...</em></p>
@@ -51,9 +66,9 @@ export class FetchData extends Component {
         <table className='table table-striped' aria-labelledby="tabelLabel">
             <tr>
                 <td>Source</td>
-                <td><input type="text" name="locationName1" /></td>
+                <td><input type="text" name="Source" /></td>
                 <td>Destination</td>
-                <td><input type="text" name="locationName2" /></td>
+                <td><input type="text" name="Destination" /></td>
                 <td>TimeLine</td>
                 <td>
                     <select>
