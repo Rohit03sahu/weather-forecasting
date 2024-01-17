@@ -14,6 +14,7 @@ export class FetchData extends Component {
 
   static renderForecastsTable(forecasts) {
     return (
+      
       <table className='table table-striped' aria-labelledby="tabelLabel">
         <thead>
           <tr>
@@ -46,6 +47,26 @@ export class FetchData extends Component {
       <div>
         <h1 id="tabelLabel" >Weather forecast</h1>
         <p>This component demonstrates fetching data from the server.</p>
+        
+        <table className='table table-striped' aria-labelledby="tabelLabel">
+            <tr>
+                <td>Source</td>
+                <td><input type="text" name="locationName1" /></td>
+                <td>Destination</td>
+                <td><input type="text" name="locationName2" /></td>
+                <td>TimeLine</td>
+                <td>
+                    <select>
+                        <option value="Select">--Select--</option>
+                        <option value="minutely">Minutely</option>
+                        <option value="hourly">Hourly</option>
+                        <option value="daily">Daily</option>
+                    </select>
+                </td>
+                <td><button id="search">Search</button></td>
+            </tr>
+        </table>
+
         {contents}
       </div>
     );
