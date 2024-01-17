@@ -23,5 +23,17 @@ namespace weatherforecast.Repository
             }
             return response;
         }
+
+        public async Task<HttpResponseMessage> GetLocationData()
+        {
+            var client = new HttpClient();
+            client.BaseAddress = new Uri(_appSettings.WeatherApiUrl);  //https://api.tomorrow.io/v4/weather/forecast?location=new%20york&apikey=3Ru3wXyFO5lVAy2BzL1kqto1QmRpe6FH");
+            var response = await client.GetAsync($"{_appSettings.LocationApiEndpoint}?apikey={_appSettings.WeatherApiKey}");
+            if (response == null || response.StatusCode != HttpStatusCode.OK)
+            {
+                throw new Exception($"unable to fetch records from weather api {response?.ReasonPhrase}");
+            }
+            return response;
+        }
     }
 }

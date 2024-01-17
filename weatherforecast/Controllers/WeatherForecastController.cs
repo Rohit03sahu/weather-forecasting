@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using weatherforecast.Enums;
+using weatherforecast.Model.Common;
 using weatherforecast.Model.RequestDto;
 using weatherforecast.Model.ResponseDto;
 using weatherforecast.Provider;
@@ -34,5 +35,14 @@ namespace weatherforecast.Controllers
             }
             return Ok(weatherForecasts);
         }
+
+        [HttpGet]
+        [Route("location")]
+        public async Task<ActionResult<List<string>>> GetLocation()
+        {
+            var locations = await _weatherForecastProvider.GetLocations();
+            return Ok(locations.locations);
+        }
+
     }
 }

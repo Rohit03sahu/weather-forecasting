@@ -59,7 +59,20 @@ namespace weatherforecast.Provider
 
         }
 
-        public async Task<WeatherForecasts> getDeltaChanges(List<WeatherForecast> source, List<WeatherForecast> destination)
+        public async Task<Data> GetLocations()
+        {
+            Data data = new Data();
+            var response = await _weatherRepository.GetLocationData();
+            var locData = await response.Content.ReadAsStringAsync();
+            if (!string.IsNullOrEmpty(locData))
+            {
+                var locationJson = JsonConvert.DeserializeObject<LocationData>(locData);
+                data=locationJson.data;
+            }
+            return data;
+        }
+
+        private async Task<WeatherForecasts> getDeltaChanges(List<WeatherForecast> source, List<WeatherForecast> destination)
         {
             WeatherForecasts weatherforecasts = new WeatherForecasts() 
             { 

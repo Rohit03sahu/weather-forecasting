@@ -11,5 +11,6 @@
         public string WeatherApiKey => _configuration.GetValue<string>("WeatherApiKey");
         public string WeatherApiUrl => _configuration.GetValue<string>("WeatherApiUrl");
         public string WeatherApiEndpoint => _configuration.GetValue<string>("WeatherApiEndpoint");
+        public string LocationApiEndpoint => _configuration.GetValue<string>("LocationApiEndpoint");
     }
 }
