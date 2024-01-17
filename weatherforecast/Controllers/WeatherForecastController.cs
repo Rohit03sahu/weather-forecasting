@@ -1,33 +1,38 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using weatherforecast.Enums;
+using weatherforecast.Model.RequestDto;
+using weatherforecast.Model.ResponseDto;
+using weatherforecast.Provider;
 
 namespace weatherforecast.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/weather")]
     public class WeatherForecastController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    };
 
         private readonly ILogger<WeatherForecastController> _logger;
+        private readonly IWeatherForecastProvider _weatherForecastProvider;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, IWeatherForecastProvider weatherForecastProvider)
         {
             _logger = logger;
+            _weatherForecastProvider= weatherForecastProvider;
         }
 
         [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+        [Route("forecastbytimeline")]
+        public async Task<ActionResult<WeatherForecasts>> GetWeatherForecast(string location, WeatherTimeLineEnum timeline)
         {
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
+            WeatherForecasts weatherForecasts = new WeatherForecasts() { IsSuccess=true, reason= new List<string>() };
+            if (string.IsNullOrEmpty(location)) { weatherForecasts.IsSuccess=false; weatherForecasts.reason.Add("Invalid Location"); }
+
+            if (weatherForecasts.IsSuccess)
+            {                
+                weatherForecasts= await _weatherForecastProvider.FetchWeatherForecast(new WeatherForecastDto() { Locations= new List<string>() { location }, TimeLine=timeline });
+            }
+            return Ok(weatherForecasts);
         }
     }
 }
