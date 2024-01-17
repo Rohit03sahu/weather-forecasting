@@ -34,10 +34,10 @@ namespace weatherforecast.Provider
                         forecasts= WeatherForecastMapper.MapMinutelyForecast(forecastJson);
 
                     if (request.TimeLine.ToString()== WeatherTimeLineEnum.Hourly.ToString())
-                        forecasts= WeatherForecastMapper.MapMinutelyForecast(forecastJson);
+                        forecasts= WeatherForecastMapper.MapHourlyForecast(forecastJson);
 
                     if (request.TimeLine.ToString()== WeatherTimeLineEnum.Daily.ToString())
-                        forecasts= WeatherForecastMapper.MapMinutelyForecast(forecastJson);
+                        forecasts= WeatherForecastMapper.MapDailyForecast(forecastJson);
                 }
                 keyValuePairs.Add(loc, forecasts);
             }

@@ -6,33 +6,29 @@ export class FetchData extends Component {
   constructor(props) {
     super(props);
     this.state = { forecasts: [], loading: true };
+    this.state = { locations: [], locLoading: true };
   }
 
   componentDidMount() {
     this.populateWeatherData();
+    this.populateLocationData();
   }
 
   static renderForecastsTable(forecasts) {
     return (
-      
+    
       <table className='table table-striped' aria-labelledby="tabelLabel">
         <thead>
           <tr>
             <th>Date</th>
             <th>Temp. (C)</th>
             <th>Temp. (F)</th>
-            <th>Summary</th>
           </tr>
         </thead>
         <tbody>
-          {forecasts.map(forecast =>
-            <tr key={forecast.date}>
-              <td>{forecast.date}</td>
-              <td>{forecast.temperatureC}</td>
-              <td>{forecast.temperatureF}</td>
-              <td>{forecast.summary}</td>
-            </tr>
-          )}
+          {
+                    
+          }
         </tbody>
       </table>
     );
@@ -45,9 +41,8 @@ export class FetchData extends Component {
            <option value="Select">--Select--</option>
             { 
                 locations.map(location => 
-                    <option value={location}>{location}</option>
-        
-            )}
+                    <option value={location}>{location}</option>)
+            }
        </select>
     );
   }
@@ -58,6 +53,10 @@ export class FetchData extends Component {
       ? <p><em>Loading...</em></p>
       : FetchData.renderForecastsTable(this.state.forecasts);
 
+    let locContent = this.state.locLoading
+      ? <p><em>Loading...</em></p>
+      : FetchData.renderLocationData(this.state.locations);
+
     return (
       <div>
         <h1 id="tabelLabel" >Weather forecast</h1>
@@ -66,9 +65,9 @@ export class FetchData extends Component {
         <table className='table table-striped' aria-labelledby="tabelLabel">
             <tr>
                 <td>Source</td>
-                <td><input type="text" name="Source" /></td>
+                <td>{locContent}</td>
                 <td>Destination</td>
-                <td><input type="text" name="Destination" /></td>
+                <td>{locContent}</td>
                 <td>TimeLine</td>
                 <td>
                     <select>
@@ -88,8 +87,17 @@ export class FetchData extends Component {
   }
 
   async populateWeatherData() {
-    const response = await fetch('weatherforecast');
+    const response = await fetch('https://localhost:7195/api/weather/forecastbytimeline?SourceLocation=delhi&DestLocation=mumbai&timeline=Daily');
+    debugger;
     const data = await response.json();
-    this.setState({ forecasts: data, loading: false });
+    console.log(data);
+    this.setState({ forecasts: data.source, loading: false });
+  }
+
+  async populateLocationData() {
+    const response = await fetch('https://localhost:7195/api/weather/location');
+    const data = await response.json();
+    console.log(data);
+    this.setState({ locations: data, locLoading: false });
   }
 }

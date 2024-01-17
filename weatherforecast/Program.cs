@@ -8,6 +8,8 @@ internal class Program
 {
     private static void Main(string[] args)
     {
+        var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
@@ -17,7 +19,14 @@ internal class Program
         builder.Services.AddSingleton<AppSettings>();
         builder.Services.AddScoped<IWeatherForecastProvider, WeatherForecastProvider>();
         builder.Services.AddScoped<IWeatherRepository, WeatherRepository>();
-
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy(name: MyAllowSpecificOrigins,
+                              builder =>
+                              {
+                                  builder.WithOrigins("*");
+                              });
+        });
         builder.Services.AddSwaggerGen(c =>
         {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "Weather ForeCast API", Version = "v1", });
@@ -41,7 +50,7 @@ internal class Program
         {
             c.SwaggerEndpoint("/swagger/v1/swagger.json", "Mqtt API V1");
         });
-
+        app.UseCors(MyAllowSpecificOrigins);
         app.MapControllerRoute(
             name: "default",
             pattern: "{controller}/{action=Index}/{id?}");

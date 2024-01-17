@@ -24,9 +24,10 @@ namespace weatherforecast.Controllers
 
         [HttpGet]
         [Route("forecastbytimeline")]
-        public async Task<ActionResult<WeatherForecasts>> GetWeatherForecast(List<string> location, WeatherTimeLineEnum timeline)
+        public async Task<ActionResult<WeatherForecasts>> GetWeatherForecast(string SourceLocation, string DestLocation, WeatherTimeLineEnum timeline)
         {
             WeatherForecasts weatherForecasts = new WeatherForecasts() { IsSuccess=true, reason= new List<string>() };
+            List<string> location= new List<string>() { SourceLocation, DestLocation};
             if (location == null && location.Count <=1 ) { weatherForecasts.IsSuccess=false; weatherForecasts.reason.Add("Invalid Location / atleast two location should be there for delta changes"); }
 
             if (weatherForecasts.IsSuccess)
