@@ -5,99 +5,151 @@ export class FetchData extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { forecasts: [], loading: true };
-    this.state = { locations: [], locLoading: true };
+    this.state = { loc:[], timeLineValue: "", forecasts: [], postsPerPage: 10,
+       currentPage: 1, loading: true, locations: [], locLoading: true  };
+    this.handleTimeLineChange = this.handleTimeLineChange.bind(this);
+    this.handleLocChange = this.handleLocChange.bind(this);
+    //this.handleDestinationChange = this.handleDestinationChange.bind(this);
   }
 
   componentDidMount() {
-    this.populateWeatherData();
     this.populateLocationData();
   }
-
-  static renderForecastsTable(forecasts) {
-    return (
-    
-      <table className='table table-striped' aria-labelledby="tabelLabel">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Temp. (C)</th>
-            <th>Temp. (F)</th>
-          </tr>
-        </thead>
-        <tbody>
-          {
-                    
-          }
-        </tbody>
-      </table>
-    );
-  }
-
-  static renderLocationData(locations) {
-    return (
+  renderLocationData(locations) {
       
-       <select>
-           <option value="Select">--Select--</option>
+    return (   
+       <select class="form-select" aria-label="Default select example" onChange={this.handleLocChange} multiple>
+           <option value="Select" >--Select--</option>
             { 
-                locations.map(location => 
-                    <option value={location}>{location}</option>)
+                locations.locResponse.map(x=>
+                            <option value={x.latLong}>{x.name}</option>)
             }
        </select>
     );
   }
 
+  renderForecastData(forecasts) {
+      const { postsPerPage, currentPage } = this.state;
+      const indexOfLastPage = currentPage * postsPerPage;
+      const indexOfFirstPage = indexOfLastPage - postsPerPage;
+      const currentPosts = forecasts.data.slice(indexOfFirstPage, indexOfLastPage)
+
+    return (<tbody>   
+           {
+              currentPosts.map(forecast =>
+                           <tr key={forecast.date}>
+                               <td>{forecast.timeStamp}</td>
+                               <td>{forecast.location}</td>
+                               <td>{forecast.temperatureInC}</td>
+                               <td>{forecast.temperatureInF}</td>                               
+                           </tr>)
+           }
+           </tbody>
+    );
+  }
+ 
+  showPagination = () => {
+     const { postsPerPage, forecasts } = this.state;
+     const pageNumbers = [];
+     const totalPosts = forecasts.length;
+
+     for(let i = 1; i<=Math.ceil(totalPosts/postsPerPage); i++){
+       pageNumbers.push(i)
+     }
+
+     const pagination = (pageNumbers) => {
+       this.setState({currentPage: pageNumbers})
+     }
+
+     return(
+       <nav>
+       <ul className="pagination">
+       {pageNumbers.map(number => (
+         <li key={number} className={this.state.currentPage === number ? 'page-item active' : 'page-item' }>
+         <button onClick={()=> pagination(number)} className="page-link"> {number} </button>
+         </li>
+       ))}
+       </ul>
+       </nav>
+     )
+
+
+   }
+
+   handleTimeLineChange=(event)=>{
+        this.setState({timeLineValue: event.target.value}) 
+   }
+
+   handleLocChange=(event)=>{
+       
+        this.setState({loc: event.target.value}) 
+   }
+
 
   render() {
-    let contents = this.state.loading
-      ? <p><em>Loading...</em></p>
-      : FetchData.renderForecastsTable(this.state.forecasts);
 
     let locContent = this.state.locLoading
       ? <p><em>Loading...</em></p>
-      : FetchData.renderLocationData(this.state.locations);
+      :  this.renderLocationData(this.state.locations);
 
     return (
       <div>
         <h1 id="tabelLabel" >Weather forecast</h1>
-        <p>This component demonstrates fetching data from the server.</p>
-        
-        <table className='table table-striped' aria-labelledby="tabelLabel">
-            <tr>
-                <td>Source</td>
-                <td>{locContent}</td>
-                <td>Destination</td>
-                <td>{locContent}</td>
-                <td>TimeLine</td>
-                <td>
-                    <select>
-                        <option value="Select">--Select--</option>
-                        <option value="minutely">Minutely</option>
-                        <option value="hourly">Hourly</option>
-                        <option value="daily">Daily</option>
-                    </select>
-                </td>
-                <td><button id="search">Search</button></td>
-            </tr>
+        <p>This component demonstrates fetching data from the server.</p>        
+        <table class="table table-bordered ">
+            <tbody>
+                <tr>
+                    <td>Enter the Location Source</td>
+                    <td colspan="1">{locContent }</td>                    
+                    <td>TimeLine</td>
+                    <td>
+                        <select onChange={this.handleTimeLineChange} >
+                            <option value="Select">--Select--</option>
+                            <option value="minutely">Minutely</option>
+                            <option value="hourly">Hourly</option>
+                            <option value="daily">Daily</option>
+                        </select>
+                    </td>
+                    <td><button id="search" onClick={this.populateWeatherData}>Search</button></td>
+                </tr>
+            </tbody>
         </table>
+        
+        <br /><br />
+        <table className='table table-striped' aria-labelledby="tabelLabel">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Location</th>
+            <th>Temp. (C)</th>
+            <th>Temp. (F)</th>                 
+          </tr>
+        </thead>
+        
+          {
+               this.state.loading
+                    ? <p><em>Loading...</em></p>
+                    : this.renderForecastData(this.state.forecasts)
+          }
+          {this.showPagination()}
+      
+      </table>
 
-        {contents}
       </div>
     );
   }
 
-  async populateWeatherData() {
-    const response = await fetch('https://localhost:7195/api/weather/forecastbytimeline?SourceLocation=delhi&DestLocation=mumbai&timeline=Daily');
-    debugger;
+  populateWeatherData=async ()=> {
+    console.log(this.state.loc);
+    const response = await fetch('https://localhost:7195/api/weather/forecastbytimeline?SourceLocation='+this.state.loc+'&DestLocation=mumbai&timeline='+this.state.timeLineValue);
     const data = await response.json();
-    console.log(data);
-    this.setState({ forecasts: data.source, loading: false });
+    this.setState({ forecasts: data, loading: false });
   }
+
 
   async populateLocationData() {
     const response = await fetch('https://localhost:7195/api/weather/location');
     const data = await response.json();
-    console.log(data);
     this.setState({ locations: data, locLoading: false });
   }
 }

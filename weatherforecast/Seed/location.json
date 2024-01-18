@@ -1,0 +1,54 @@
+[
+  {
+    "name": "New Zealand",
+    "type": "Point",
+    "coordinates": [ -43.91753400078872, -17.18734089999998 ]
+  },
+
+  {
+    "name": "Gisborne",
+    "type": "Point",
+    "coordinates": [ -38.25112490062481, 178.14890989999998 ]
+  },
+  {
+    "name": "Hawke's Bay",
+    "type": "Point",
+    "coordinates": [ -39.43432790084443, 176.7652742 ]
+  },
+  {
+    "name": "King Country",
+    "type": "Point",
+    "coordinates": [ -38.706946000716364, 175.17700189999996 ]
+  },
+  {
+    "name": "Manawatu-Whanganui",
+    "type": "Point",
+    "coordinates": [ -39.70012750088446, 175.49863249999999 ]
+  },
+  {
+    "name": "Northland",
+    "type": "Point",
+    "coordinates": [ -35.37127019996966, 173.74053369999996 ]
+  },
+  {
+    "name": "Otago",
+    "type": "Point",
+    "coordinates": [ -45.129985900466124, 169.5248818 ]
+  },
+  {
+    "name": "Southland",
+    "type": "Point",
+    "coordinates": [ -45.72555550026526, 168.2936808 ]
+  },
+  {
+    "name": "Taranaki",
+    "type": "Point",
+    "coordinates": [ -39.271106700817924, 174.154795 ]
+  },
+  {
+    "name": "West Coast",
+    "type": "Point",
+    "coordinates": [ -42.994566900945486, 170.71004129999997 ]
+  }
+
+]

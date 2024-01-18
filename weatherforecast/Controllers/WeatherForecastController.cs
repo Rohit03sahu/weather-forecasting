@@ -39,10 +39,10 @@ namespace weatherforecast.Controllers
 
         [HttpGet]
         [Route("location")]
-        public async Task<ActionResult<List<string>>> GetLocation()
+        public async Task<ActionResult<LocationResponse>> GetLocation()
         {
             var locations = await _weatherForecastProvider.GetLocations();
-            return Ok(locations.locations);
+            return Ok(locations);
         }
 
     }

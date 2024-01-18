@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Converters;
 using weatherforecast.Config;
@@ -13,7 +14,7 @@ internal class Program
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
-      
+        builder.Services.AddMemoryCache();
         builder.Services.AddControllersWithViews().AddNewtonsoftJson(options =>
                 options.SerializerSettings.Converters.Add(new StringEnumConverter()));
         builder.Services.AddSingleton<AppSettings>();

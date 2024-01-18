@@ -1,43 +1,30 @@
 ﻿using weatherforecast.Model.Common;
 using weatherforecast.Model.ResponseDto;
+using weatherforecast.Seed;
 
 namespace weatherforecast.Mapper
 {
     public class WeatherForecastMapper
     {
-        public static List<WeatherForecast> MapMinutelyForecast(Weather weather)
-        {
-            List<WeatherForecast> weatherForecast = new List<WeatherForecast>();
-            foreach (var report in weather.timelines.minutely)
-            {
-                weatherForecast.Add
-                    (
-                    new WeatherForecast { Location= weather.location.name, TimeStamp= report.time, TempratureInC= report.values.temperature, TempratureInF= convertCelToF(report.values.temperature) });
-            }
-            return weatherForecast;
 
-        }
-        
-        public static List<WeatherForecast> MapHourlyForecast(Weather weather)
+        public static WeatherForecasts mapForecastData(Weather weatherData,string location)
         {
-            List<WeatherForecast> weatherForecast = new List<WeatherForecast>() ;
-            foreach (var report in weather.timelines.hourly)
+            WeatherForecasts weatherforecasts = new WeatherForecasts()
             {
-                weatherForecast.Add(new WeatherForecast { Location= weather.location.name, TimeStamp= report.time, TempratureInC= report.values.temperature, TempratureInF=convertCelToF(report.values.temperature) });
-            }
-            return weatherForecast;
+                Data= new List<WeatherForecast>()
+            };
+            weatherData.data.timelines.FirstOrDefault().intervals.ForEach(x=> weatherforecasts.Data.Add(new WeatherForecast() { Location= location, TemperatureInC=x.values.temperature, TemperatureInF= convertCelToF(x.values.temperature), TimeStamp=x.startTime}));
+            weatherforecasts.IsSuccess = true;
+            return weatherforecasts;
         }
 
-        public static List<WeatherForecast> MapDailyForecast(Weather weather)
+        public static List<LocResponse> mapLocationSeedData(List<LocationSeedData> locationSeedDatas)
         {
-            List<WeatherForecast> weatherForecast = new List<WeatherForecast>();
-            foreach (var report in weather.timelines.daily)
-            {
-                weatherForecast.Add(new WeatherForecast { Location= weather.location.name, TimeStamp= report.time, TempratureInC= report.values.temperature, TempratureInF=convertCelToF(report.values.temperature) });
-            }
-            return weatherForecast;
+            List<LocResponse> locResponses = new List<LocResponse>();
+            locationSeedDatas.ForEach(x => locResponses.Add(new LocResponse() { name=x.Name, latLong= x.Coordinates[0]+","+x.Coordinates[1] }));
+            return locResponses;
         }
-        public static double convertCelToF(double celsius)
+        private static double convertCelToF(double celsius)
         {
             var value = (9/5 * celsius) + 32;
             return value;
