@@ -5,7 +5,7 @@ export class FetchData extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { loc:[], timeLineValue: "", forecasts: [], postsPerPage: 10,
+    this.state = { loc:[], timeLineValue: "", forecasts: [], postsPerPage: 24,
        currentPage: 1, loading: true, locations: [], locLoading: true  };
     this.handleTimeLineChange = this.handleTimeLineChange.bind(this);
     this.handleLocChange = this.handleLocChange.bind(this);
@@ -81,8 +81,8 @@ export class FetchData extends Component {
    }
 
    handleLocChange=(event)=>{
-       
-        this.setState({loc: event.target.value}) 
+        const values = [...event.target.selectedOptions].map(opt => opt.value);
+        this.setState({loc: values}) 
    }
 
 
@@ -100,7 +100,7 @@ export class FetchData extends Component {
             <tbody>
                 <tr>
                     <td>Enter the Location Source</td>
-                    <td colspan="1">{locContent }</td>                    
+                    <td>{locContent }</td>                    
                     <td>TimeLine</td>
                     <td>
                         <select onChange={this.handleTimeLineChange} >
@@ -124,8 +124,7 @@ export class FetchData extends Component {
             <th>Temp. (C)</th>
             <th>Temp. (F)</th>                 
           </tr>
-        </thead>
-        
+        </thead>        
           {
                this.state.loading
                     ? <p><em>Loading...</em></p>
@@ -140,10 +139,24 @@ export class FetchData extends Component {
   }
 
   populateWeatherData=async ()=> {
-    console.log(this.state.loc);
-    const response = await fetch('https://localhost:7195/api/weather/forecastbytimeline?SourceLocation='+this.state.loc+'&DestLocation=mumbai&timeline='+this.state.timeLineValue);
-    const data = await response.json();
-    this.setState({ forecasts: data, loading: false });
+      let leng = this.state.loc.length;      
+      /*if(leng>=2)
+      {
+            let PrimaryLoc=this.state.loc[0];
+            let SecondaryLoc=this.state.loc[1];
+            let queryParam='primaryloc='+PrimaryLoc+'&secondaryloc='+SecondaryLoc+'&timeline='+this.state.timeLineValue;
+            const response = await fetch('https://localhost:7195/api/weather/deltaforecastbytimeline?'+queryParam);
+            const data = await response.json();
+            this.setState({ forecasts: data, loading: false });
+      }
+      else*/
+      {
+          let PrimaryLoc=this.state.loc[0];
+            let queryParam='location='+PrimaryLoc+'&timeline='+this.state.timeLineValue;
+            const response = await fetch('https://localhost:7195/api/weather/forecastbytimeline?'+queryParam);
+            const data = await response.json();
+            this.setState({ forecasts: data, loading: false });
+      }
   }
 
 

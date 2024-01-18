@@ -18,6 +18,20 @@ namespace weatherforecast.Mapper
             return weatherforecasts;
         }
 
+        public static WeatherForecastWithDelta mapDeltaForecastData(Weather PrimaryLoc, Weather SecondaryLoc, string Primaryloc, string Secondloc)
+        {
+            WeatherForecastWithDelta weatherforecasts = new WeatherForecastWithDelta()
+            {
+                PrimaryLocForecast= new List<WeatherForecast>(),
+                SecondaryLocForecast= new List<WeatherForecast>()
+            };
+            PrimaryLoc.data.timelines.FirstOrDefault().intervals.ForEach(x => weatherforecasts.PrimaryLocForecast.Add(new WeatherForecast() { Location= Primaryloc, TemperatureInC=x.values.temperature, TemperatureInF= convertCelToF(x.values.temperature), TimeStamp=x.startTime }));
+            SecondaryLoc.data.timelines.FirstOrDefault().intervals.ForEach(x => weatherforecasts.SecondaryLocForecast.Add(new WeatherForecast() { Location= Secondloc, TemperatureInC=x.values.temperature, TemperatureInF= convertCelToF(x.values.temperature), TimeStamp=x.startTime }));
+
+            weatherforecasts.IsSuccess = true;
+            return weatherforecasts;
+        }
+
         public static List<LocResponse> mapLocationSeedData(List<LocationSeedData> locationSeedDatas)
         {
             List<LocResponse> locResponses = new List<LocResponse>();

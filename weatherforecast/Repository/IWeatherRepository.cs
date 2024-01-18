@@ -4,7 +4,7 @@ namespace weatherforecast.Repository
 {
     public interface IWeatherRepository
     {
-        Task<HttpResponseMessage> FetchWeatherDetailsByLocations(List<string> locations,string timeLine);
+        Task<HttpResponseMessage> FetchWeatherDetailsByLocations(string location,string timeLine);
         Task<HttpResponseMessage> GetLocationData();
     }
 }

@@ -4,14 +4,30 @@ namespace weatherforecast.Model.RequestDto
 {
     public class WeatherForecastDto
     {
-        public List<string> Locations { get; set; }
+        public string Location { get; set; }
         public WeatherTimeLineEnum TimeLine {  get; set; }
 
         public List<string> Validate() {
         
             List<string> errorList = new List<string>();
-            if (this.Locations == null && this.Locations.Count<=0) { errorList.Add(" Invalid Location "); }
+            //if (this.Locations == null && this.Locations.Count<=0) { errorList.Add(" Invalid Location "); }
             if (this.TimeLine == null ) { errorList.Add(" Invalid Timeline"); }
+
+            return errorList;
+        }
+    }
+
+    public class WeatherForecastWithDeltaDto
+    {
+        public List<string> Locations { get; set; }
+        public WeatherTimeLineEnum TimeLine { get; set; }
+
+        public List<string> Validate()
+        {
+
+            List<string> errorList = new List<string>();
+            //if (this.Locations == null && this.Locations.Count<=0) { errorList.Add(" Invalid Location "); }
+            if (this.TimeLine == null) { errorList.Add(" Invalid Timeline"); }
 
             return errorList;
         }

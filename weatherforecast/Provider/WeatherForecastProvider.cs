@@ -21,7 +21,7 @@ namespace weatherforecast.Provider
             _memoryCache = memoryCache;
 
         }
-        public async Task<WeatherForecasts> FetchWeatherForecast(WeatherForecastDto request)
+        public async Task<WeatherForecastWithDelta> FetchDeltaWeatherForecast(WeatherForecastWithDeltaDto request)
         {
             Dictionary<string, Weather> keyValuePairs = new Dictionary<string, Weather>();
             foreach (var loc in request.Locations)
@@ -34,7 +34,7 @@ namespace weatherforecast.Provider
                 if (request.TimeLine.ToString()== WeatherTimeLineEnum.Daily.ToString())
                     timeLineType = "1d";
 
-                var response = await _weatherRepository.FetchWeatherDetailsByLocations(new List<string>() { loc }, timeLineType);
+                var response = await _weatherRepository.FetchWeatherDetailsByLocations(loc, timeLineType);
                 var forecastString = await response.Content.ReadAsStringAsync();
                 Weather weatherForecast = new Weather();
                 if (response != null && !string.IsNullOrEmpty(forecastString))
@@ -44,8 +44,38 @@ namespace weatherforecast.Provider
                 keyValuePairs.Add(loc, weatherForecast);
             }
 
-            var weatherforecasts = WeatherForecastMapper.mapForecastData(keyValuePairs[request.Locations[0]], request.Locations.FirstOrDefault());
+            var resp = WeatherForecastMapper.mapDeltaForecastData(keyValuePairs[request.Locations[0]], keyValuePairs[request.Locations[1]], request.Locations[0], request.Locations[1]);
+            if (resp == null)
+            {
+                resp.IsSuccess= false;
+                resp.reason=new List<string>() { "No data found for source" };
+            }
+            return resp;
+        }
 
+
+        public async Task<WeatherForecasts> FetchWeatherForecast(WeatherForecastDto request)
+        {
+            Dictionary<string, Weather> keyValuePairs = new Dictionary<string, Weather>();
+            
+                string timeLineType = "";
+                if (request.TimeLine.ToString()== WeatherTimeLineEnum.Minutely.ToString())
+                    timeLineType = "1m";
+                if (request.TimeLine.ToString()== WeatherTimeLineEnum.Hourly.ToString())
+                    timeLineType = "1h";
+                if (request.TimeLine.ToString()== WeatherTimeLineEnum.Daily.ToString())
+                    timeLineType = "1d";
+
+                var response = await _weatherRepository.FetchWeatherDetailsByLocations(request.Location, timeLineType);
+                var forecastString = await response.Content.ReadAsStringAsync();
+                Weather weatherForecast = new Weather();
+                if (response != null && !string.IsNullOrEmpty(forecastString))
+                {
+                    weatherForecast = JsonConvert.DeserializeObject<Weather>(forecastString);
+                }
+                keyValuePairs.Add(request.Location, weatherForecast);
+
+            var weatherforecasts = WeatherForecastMapper.mapForecastData(keyValuePairs[request.Location], request.Location);
             if (weatherforecasts == null)
             {
                 weatherforecasts.IsSuccess= false;

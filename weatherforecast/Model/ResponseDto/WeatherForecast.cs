@@ -15,4 +15,12 @@ namespace weatherforecast.Model.ResponseDto
         public double TemperatureInF { get; set; }
     }
 
+    public class WeatherForecastWithDelta : BaseResponse
+    {
+        public List<WeatherForecast> PrimaryLocForecast { get; set; }
+        public List<WeatherForecast> SecondaryLocForecast { get; set; }
+
+        public List<WeatherForecast> DeltaForecast { get; set; }
+    }
+
 }
