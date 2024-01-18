@@ -2,4 +2,6 @@
 weather forecasting
 
 Weather API Output Sample
-![image](https://github.com/Rohit03sahu/weather-forecasting/assets/30385987/a089e0fa-6c07-4884-8931-a69c2f2b28d5)
+
+
+![image](https://github.com/Rohit03sahu/weather-forecasting/assets/30385987/3ddea07d-dab8-4413-8e03-56e38efeb780)
