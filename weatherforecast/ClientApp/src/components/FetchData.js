@@ -5,7 +5,7 @@ export class FetchData extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { loc:[], timeLineValue: "", forecasts: [], postsPerPage: 24,
+    this.state = { loc:[],locNames:[], timeLineValue: "", forecasts: [], postsPerPage: 24,
        currentPage: 1, loading: true, locations: [], locLoading: true  };
     this.handleTimeLineChange = this.handleTimeLineChange.bind(this);
     this.handleLocChange = this.handleLocChange.bind(this);
@@ -33,20 +33,61 @@ export class FetchData extends Component {
       const indexOfLastPage = currentPage * postsPerPage;
       const indexOfFirstPage = indexOfLastPage - postsPerPage;
       const currentPosts = forecasts.data.slice(indexOfFirstPage, indexOfLastPage)
-
-    return (<tbody>   
-           {
-              currentPosts.map(forecast =>
-                           <tr key={forecast.date}>
-                               <td>{forecast.timeStamp}</td>
-                               <td>{forecast.location}</td>
-                               <td>{forecast.temperatureInC}</td>
-                               <td>{forecast.temperatureInF}</td>                               
-                           </tr>)
-           }
+      
+    return ( <table className='table table-striped' aria-labelledby="tabelLabel">
+                <thead>
+                    <tr>
+                    <th>Date</th>
+                    <th>Location</th>
+                    <th>Temp. (C)</th>
+                    <th>Temp. (F)</th>                 
+                    </tr>
+                </thead>          
+            <tbody>   
+               {
+                  currentPosts.map(forecast =>
+                               <tr key={forecast.date}>
+                                   <td>{forecast.timeStamp}</td>
+                                   <td>{forecast.location}</td>
+                                   <td>{forecast.temperatureInC}</td>
+                                   <td>{forecast.temperatureInF}</td>                               
+                               </tr>)
+               }
            </tbody>
+      </table>
     );
   }
+
+   renderMultiLocForecastData(forecasts) {
+     
+    
+    return ( <table>
+           {
+                forecasts.data.map(forecast =>
+                    <table className='table table-striped' aria-labelledby="tabelLabel">
+                        <thead>
+                          <tr>
+                            <th>Date</th>
+                            <th>Location</th>
+                            <th>Temp. (C)</th>
+                            <th>Temp. (F)</th>                 
+                          </tr>
+                        </thead>  
+                        <tbody>
+                        {forecast.locationForecasts.map(x=>
+                            <tr key={x.date}>
+                                <td>{x.timeStamp}</td>
+                                <td>{x.location}</td>
+                                <td>{x.temperatureInC}</td>
+                                <td>{x.temperatureInF}</td>                               
+                            </tr>)}
+                        </tbody>
+                    </table>)
+           }
+           </table>
+    );
+  }
+
  
   showPagination = () => {
      const { postsPerPage, forecasts } = this.state;
@@ -77,12 +118,15 @@ export class FetchData extends Component {
    }
 
    handleTimeLineChange=(event)=>{
-        this.setState({timeLineValue: event.target.value}) 
+        this.setState({timeLineValue: event.target.value});
+        this.setState({ loading: true });
    }
 
    handleLocChange=(event)=>{
         const values = [...event.target.selectedOptions].map(opt => opt.value);
-        this.setState({loc: values}) 
+        const names = [...event.target.selectedOptions].map(opt => opt.text);
+        this.setState({loc: values});
+        this.setState({locNames: names}) 
    }
 
 
@@ -116,43 +160,50 @@ export class FetchData extends Component {
         </table>
         
         <br /><br />
-        <table className='table table-striped' aria-labelledby="tabelLabel">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Location</th>
-            <th>Temp. (C)</th>
-            <th>Temp. (F)</th>                 
-          </tr>
-        </thead>        
-          {
-               this.state.loading
-                    ? <p><em>Loading...</em></p>
-                    : this.renderForecastData(this.state.forecasts)
-          }
-          {this.showPagination()}
-      
-      </table>
-
+        {  
+            this.state.loading
+                ? <p><em>Loading...</em></p>
+                : this.state.loc.length <= 1 ? this.renderForecastData(this.state.forecasts):
+                this.renderMultiLocForecastData(this.state.forecasts)
+                  
+            /*this.showPagination()*/
+        }
       </div>
     );
   }
 
   populateWeatherData=async ()=> {
-      let leng = this.state.loc.length;      
-      /*if(leng>=2)
+      let leng = this.state.loc.length;    
+      if(leng>=2)
       {
-            let PrimaryLoc=this.state.loc[0];
-            let SecondaryLoc=this.state.loc[1];
-            let queryParam='primaryloc='+PrimaryLoc+'&secondaryloc='+SecondaryLoc+'&timeline='+this.state.timeLineValue;
-            const response = await fetch('https://localhost:7195/api/weather/deltaforecastbytimeline?'+queryParam);
-            const data = await response.json();
-            this.setState({ forecasts: data, loading: false });
+            await fetch('https://localhost:7195/api/weather/multilocforecastbytimeline',
+                                        {
+                                          method: 'POST',
+                                          headers: {
+                                            'Accept': 'application/json',
+                                            'Content-Type': 'application/json',
+                                          },
+                                          body: JSON.stringify({
+                                            locations: this.state.loc,
+                                            timeLine: this.state.timeLineValue,
+                                          })
+                                        })
+                                        .then((response) => response.json())
+                                        .then((data) => {
+                                              console.log(data);
+                                              this.setState({ forecasts: data, loading: false });
+                                           })
+                                           .catch((err) => {
+                                              console.log(err.message);
+                                           });
+           /* const data = await response.json();
+            this.setState({ forecasts: data, loading: false }); */
       }
-      else*/
+      else
       {
-          let PrimaryLoc=this.state.loc[0];
-            let queryParam='location='+PrimaryLoc+'&timeline='+this.state.timeLineValue;
+            let Loc=this.state.loc[0];
+            let LocName=this.state.locNames[0];
+            let queryParam='location='+Loc+'&locationname'+LocName+'&timeline='+this.state.timeLineValue;
             const response = await fetch('https://localhost:7195/api/weather/forecastbytimeline?'+queryParam);
             const data = await response.json();
             this.setState({ forecasts: data, loading: false });

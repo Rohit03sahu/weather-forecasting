@@ -26,6 +26,9 @@ internal class Program
                               builder =>
                               {
                                   builder.WithOrigins("*");
+                                  builder.WithHeaders("*");
+                                  builder.WithMethods("*");
+                                  
                               });
         });
         builder.Services.AddSwaggerGen(c =>

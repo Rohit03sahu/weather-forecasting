@@ -18,16 +18,18 @@ namespace weatherforecast.Mapper
             return weatherforecasts;
         }
 
-        public static WeatherForecastWithDelta mapDeltaForecastData(Weather PrimaryLoc, Weather SecondaryLoc, string Primaryloc, string Secondloc)
+        public static MultiLocWeatherForecast mapMultiLocForecastData(Dictionary<string, Weather> keyValuePairs)
         {
-            WeatherForecastWithDelta weatherforecasts = new WeatherForecastWithDelta()
+            MultiLocWeatherForecast weatherforecasts = new MultiLocWeatherForecast()
             {
-                PrimaryLocForecast= new List<WeatherForecast>(),
-                SecondaryLocForecast= new List<WeatherForecast>()
+                Data= new List<MultiLocData>(),
             };
-            PrimaryLoc.data.timelines.FirstOrDefault().intervals.ForEach(x => weatherforecasts.PrimaryLocForecast.Add(new WeatherForecast() { Location= Primaryloc, TemperatureInC=x.values.temperature, TemperatureInF= convertCelToF(x.values.temperature), TimeStamp=x.startTime }));
-            SecondaryLoc.data.timelines.FirstOrDefault().intervals.ForEach(x => weatherforecasts.SecondaryLocForecast.Add(new WeatherForecast() { Location= Secondloc, TemperatureInC=x.values.temperature, TemperatureInF= convertCelToF(x.values.temperature), TimeStamp=x.startTime }));
-
+            foreach (var item in keyValuePairs )
+            {
+                var data = new List<WeatherForecast>();
+                item.Value.data.timelines.FirstOrDefault().intervals.ForEach(x => data.Add(new WeatherForecast() { Location= item.Key, TemperatureInC=x.values.temperature, TemperatureInF= convertCelToF(x.values.temperature), TimeStamp=x.startTime }));
+                weatherforecasts.Data.Add( new MultiLocData() { location=item.Key, LocationForecasts= data });
+            }            
             weatherforecasts.IsSuccess = true;
             return weatherforecasts;
         }

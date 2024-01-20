@@ -38,17 +38,17 @@ namespace weatherforecast.Controllers
 
 
 
-        [HttpGet]
-        [Route("deltaforecastbytimeline")]
-        public async Task<ActionResult<WeatherForecastWithDelta>> GetWeatherForecastWithDelta(string PrimaryLoc, string SecondaryLoc, WeatherTimeLineEnum timeline)
+        [HttpPost]
+        [Route("multilocforecastbytimeline")]
+        public async Task<ActionResult<MultiLocWeatherForecast>> GetWeatherForecastWithDelta(WeatherForecastDeltaDto weatherForecastDeltaDto)
         {
-            WeatherForecastWithDelta weatherForecasts = new WeatherForecastWithDelta() { IsSuccess=true, reason= new List<string>() };
-            List<string> location = new List<string>() { PrimaryLoc, SecondaryLoc };
-            if (location == null && location.Count <=2) { weatherForecasts.IsSuccess=false; weatherForecasts.reason.Add("Invalid Location / atleast two location should be there for delta changes"); }
+            MultiLocWeatherForecast weatherForecasts = new MultiLocWeatherForecast() { IsSuccess=true, reason= new List<string>() };
+            var errors = weatherForecastDeltaDto.Validate();
+            if (errors == null && errors?.Count <=2) { weatherForecasts.IsSuccess=false; weatherForecasts.reason.Add("Invalid Location / atleast two location should be there for delta changes"); }
 
             if (weatherForecasts.IsSuccess)
             {
-                weatherForecasts= await _weatherForecastProvider.FetchDeltaWeatherForecast(new WeatherForecastWithDeltaDto() { Locations= location, TimeLine=timeline });
+                weatherForecasts= await _weatherForecastProvider.FetchMultiLocWeatherForecast(weatherForecastDeltaDto);
             }
             return Ok(weatherForecasts);
         }

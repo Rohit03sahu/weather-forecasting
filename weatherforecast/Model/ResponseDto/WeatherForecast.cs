@@ -2,12 +2,12 @@
 
 namespace weatherforecast.Model.ResponseDto
 {
-    public class WeatherForecasts: BaseResponse
+    public class WeatherForecasts : BaseResponse
     {
-        public List<WeatherForecast> Data {  get; set; }
+        public List<WeatherForecast> Data { get; set; }
     }
 
-    public class WeatherForecast 
+    public class WeatherForecast
     {
         public string Location { get; set; }
         public DateTime? TimeStamp { get; set; }
@@ -15,12 +15,16 @@ namespace weatherforecast.Model.ResponseDto
         public double TemperatureInF { get; set; }
     }
 
-    public class WeatherForecastWithDelta : BaseResponse
+    public class MultiLocWeatherForecast : BaseResponse
     {
-        public List<WeatherForecast> PrimaryLocForecast { get; set; }
-        public List<WeatherForecast> SecondaryLocForecast { get; set; }
+        public List<MultiLocData> Data { get; set; }
 
         public List<WeatherForecast> DeltaForecast { get; set; }
     }
 
+    public class MultiLocData
+    {
+        public string location { get; set; }
+        public List<WeatherForecast> LocationForecasts { get; set; }
+    }
 }

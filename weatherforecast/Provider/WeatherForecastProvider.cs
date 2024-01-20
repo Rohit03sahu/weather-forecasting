@@ -21,7 +21,7 @@ namespace weatherforecast.Provider
             _memoryCache = memoryCache;
 
         }
-        public async Task<WeatherForecastWithDelta> FetchDeltaWeatherForecast(WeatherForecastWithDeltaDto request)
+        public async Task<MultiLocWeatherForecast> FetchMultiLocWeatherForecast(WeatherForecastDeltaDto request)
         {
             Dictionary<string, Weather> keyValuePairs = new Dictionary<string, Weather>();
             foreach (var loc in request.Locations)
@@ -41,10 +41,10 @@ namespace weatherforecast.Provider
                 {
                     weatherForecast = JsonConvert.DeserializeObject<Weather>(forecastString);
                 }
-                keyValuePairs.Add(loc, weatherForecast);
+                keyValuePairs.Add(await GetLocationNameRespectToLatLong(loc), weatherForecast);
             }
 
-            var resp = WeatherForecastMapper.mapDeltaForecastData(keyValuePairs[request.Locations[0]], keyValuePairs[request.Locations[1]], request.Locations[0], request.Locations[1]);
+            var resp = WeatherForecastMapper.mapMultiLocForecastData(keyValuePairs);
             if (resp == null)
             {
                 resp.IsSuccess= false;
@@ -57,25 +57,25 @@ namespace weatherforecast.Provider
         public async Task<WeatherForecasts> FetchWeatherForecast(WeatherForecastDto request)
         {
             Dictionary<string, Weather> keyValuePairs = new Dictionary<string, Weather>();
-            
-                string timeLineType = "";
-                if (request.TimeLine.ToString()== WeatherTimeLineEnum.Minutely.ToString())
-                    timeLineType = "1m";
-                if (request.TimeLine.ToString()== WeatherTimeLineEnum.Hourly.ToString())
-                    timeLineType = "1h";
-                if (request.TimeLine.ToString()== WeatherTimeLineEnum.Daily.ToString())
-                    timeLineType = "1d";
 
-                var response = await _weatherRepository.FetchWeatherDetailsByLocations(request.Location, timeLineType);
-                var forecastString = await response.Content.ReadAsStringAsync();
-                Weather weatherForecast = new Weather();
-                if (response != null && !string.IsNullOrEmpty(forecastString))
-                {
-                    weatherForecast = JsonConvert.DeserializeObject<Weather>(forecastString);
-                }
-                keyValuePairs.Add(request.Location, weatherForecast);
+            string timeLineType = "";
+            if (request.TimeLine.ToString()== WeatherTimeLineEnum.Minutely.ToString())
+                timeLineType = "1m";
+            if (request.TimeLine.ToString()== WeatherTimeLineEnum.Hourly.ToString())
+                timeLineType = "1h";
+            if (request.TimeLine.ToString()== WeatherTimeLineEnum.Daily.ToString())
+                timeLineType = "1d";
 
-            var weatherforecasts = WeatherForecastMapper.mapForecastData(keyValuePairs[request.Location], request.Location);
+            var response = await _weatherRepository.FetchWeatherDetailsByLocations(request.Location, timeLineType);
+            var forecastString = await response.Content.ReadAsStringAsync();
+            Weather weatherForecast = new Weather();
+            if (response != null && !string.IsNullOrEmpty(forecastString))
+            {
+                weatherForecast = JsonConvert.DeserializeObject<Weather>(forecastString);
+            }
+            keyValuePairs.Add(request.Location, weatherForecast);
+
+            var weatherforecasts = WeatherForecastMapper.mapForecastData(keyValuePairs[request.Location], await GetLocationNameRespectToLatLong(request.Location));
             if (weatherforecasts == null)
             {
                 weatherforecasts.IsSuccess= false;
@@ -108,10 +108,17 @@ namespace weatherforecast.Provider
                 //            }));
                 //    _memoryCache.Set("locationData", locationResponse.locResponse, TimeSpan.FromMinutes(30));
                 //}
+                _memoryCache.Set("locationData", locationResponse.locResponse, TimeSpan.FromMinutes(30));
             }
             else
                 locationResponse.locResponse=resp;
             return locationResponse;
+        }
+
+        public async Task<string> GetLocationNameRespectToLatLong(string latLong)
+        {
+            var resp = await this.GetLocations();            
+            return resp.locResponse.Where(x=> x.latLong==latLong).Select(z=> z.name).FirstOrDefault();
         }
 
         private List<T> GetSeedData<T>()

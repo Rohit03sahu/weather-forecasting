@@ -7,7 +7,7 @@ namespace weatherforecast.Provider
     public interface IWeatherForecastProvider
     {
         Task<WeatherForecasts> FetchWeatherForecast(WeatherForecastDto request);
-        Task<WeatherForecastWithDelta> FetchDeltaWeatherForecast(WeatherForecastWithDeltaDto request);
+        Task<MultiLocWeatherForecast> FetchMultiLocWeatherForecast(WeatherForecastDeltaDto request);
         Task<LocationResponse> GetLocations();
     }
 }
