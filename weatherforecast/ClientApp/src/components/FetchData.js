@@ -1,4 +1,9 @@
 import React, { Component } from 'react';
+import 'react-select/dist/react-select.css';
+import 'react-virtualized/styles.css';
+import 'react-virtualized-select/styles.css';
+
+import VirtualizedSelect from 'react-virtualized-select';
 
 export class FetchData extends Component {
   static displayName = FetchData.name;
@@ -29,7 +34,7 @@ export class FetchData extends Component {
 
   renderForecastData(forecasts) {    
     return (
-            <div>
+            <div>            
                 <table className='table table-striped' aria-labelledby="tabelLabel">
                     <tr>
                         <td>Location : {forecasts.location}</td><td></td>
@@ -66,35 +71,39 @@ export class FetchData extends Component {
     return ( <div>
            {
                 forecasts.data.map(forecast =>
-                    <table>
-                        <table class="table table-bordered ">
-                            <tr>
-                                <td>Location : {forecast.location}</td><td></td>
-                                <td>Min Temp (C) : {forecast.minTempInC}</td><td></td>
-                                <td>Max Temp (C) : {forecast.maxTempInC}</td><td></td>
-                                <td>Avg Temp (C) : {forecast.avgTempInC}</td><td></td>
-                            </tr>
-                        </table>
-                        <table class="table table-bordered ">
-                            <thead>
-                              <tr>
-                                    <th>Date</th>
-                                    <th>Temp. (C)</th>
-                                    <th>Temp. (F)</th>
-                                    <th>Delta Temp. (C)</th>
-                              </tr>
-                            </thead>  
-                            <tbody>
-                            {forecast.locationForecasts.map(x=>
-                                <tr key={x.date}>
-                                    <td>{x.timeStamp}</td>
-                                    <td>{x.temperatureInC}</td>
-                                    <td>{x.temperatureInF}</td>
-                                    <td>{x.deltaInC}</td>
-                                </tr>)}
-                            </tbody>
-                        </table>
-                    </table>)
+                    <div>
+                        <div>
+                            <table class="table table-bordered ">
+                                <tr>
+                                    <td><strong>Location : </strong> {forecast.location}</td><td></td>
+                                    <td><strong>Min Temp (C) : </strong> {forecast.minTempInC}</td><td></td>
+                                    <td><strong>Max Temp (C) : </strong> {forecast.maxTempInC}</td><td></td>
+                                    <td><strong>Avg Temp (C) : </strong> {forecast.avgTempInC}</td><td></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div>
+                            <table class="table table-bordered ">
+                                <thead>
+                                  <tr>
+                                        <th>Date</th>
+                                        <th>Temp. (C)</th>
+                                        <th>Temp. (F)</th>
+                                        <th>Delta Temp. (C)</th>
+                                  </tr>
+                                </thead>  
+                                <tbody>
+                                {forecast.locationForecasts.map(x=>
+                                    <tr key={x.date}>
+                                        <td>{x.timeStamp}</td>
+                                        <td>{x.temperatureInC}</td>
+                                        <td>{x.temperatureInF}</td>
+                                        <td>{x.deltaInC}</td>
+                                    </tr>)}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>)
            }
            </div>
     );
@@ -123,23 +132,24 @@ export class FetchData extends Component {
     return (
         <div>
           <div>
+           
             <h1 id="tabelLabel" >Weather forecast</h1>
             <p>This component demonstrates fetching data from the server.</p>        
-            <table class="table table-bordered ">
+            <table style={{ width:"100%"}}>
                 <tbody>
-                    <tr>
-                        <td>Enter the Location Source</td>
-                        <td>{locContent }</td>                    
-                        <td>TimeLine</td>
-                        <td>
-                            <select onChange={this.handleTimeLineChange} >
+                    <tr style={{ textalign:"centre", width:"100%"}}>
+                        <td style={{ width:"15%"}}> <strong>Enter the Location</strong> </td>
+                        <td style={{ width:"30%"}}>{locContent }</td>                    
+                        <td style={{ width:"15%"}}> <strong>TimeLine</strong> </td>
+                        <td style={{ width:"30%"}}>
+                            <select class="form-select" onChange={this.handleTimeLineChange} >
                                 <option value="Select">--Select--</option>
                                 <option value="minutely">Minutely</option>
                                 <option value="hourly">Hourly</option>
                                 <option value="daily">Daily</option>
                             </select>
                         </td>
-                        <td><button id="search" onClick={this.populateWeatherData}>Search</button></td>
+                        <td style={{ width:"20%"}}><button class="btn-primary" id="search" onClick={this.populateWeatherData}>Search</button></td>
                     </tr>
                 </tbody>
             </table>
