@@ -28,7 +28,16 @@ namespace weatherforecast.Mapper
             {
                 var data = new List<WeatherForecast>();
                 item.Value.data.timelines.FirstOrDefault().intervals.ForEach(x => data.Add(new WeatherForecast() { Location= item.Key, TemperatureInC=x.values.temperature, TemperatureInF= convertCelToF(x.values.temperature), TimeStamp=x.startTime }));
-                weatherforecasts.Data.Add( new MultiLocData() { location=item.Key, LocationForecasts= data });
+                weatherforecasts.Data.Add
+                    ( 
+                    new MultiLocData() 
+                    { 
+                        location=item.Key,
+                        LocationForecasts= data,
+                        MaxTempInC=data.Select(x => Convert.ToDouble(x.TemperatureInC)).Max().ToString(),
+                        MinTempInC=data.Select(x => Convert.ToDouble(x.TemperatureInC)).Min().ToString(),
+                        AvgTempInC=data.Select(x => Convert.ToDouble(x.TemperatureInC)).Average().ToString()
+            });
             }            
             weatherforecasts.IsSuccess = true;
             return weatherforecasts;

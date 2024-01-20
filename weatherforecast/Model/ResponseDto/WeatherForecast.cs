@@ -4,6 +4,9 @@ namespace weatherforecast.Model.ResponseDto
 {
     public class WeatherForecasts : BaseResponse
     {
+        public string MinTempInC { get; set; }
+        public string MaxTempInC { get; set; }
+        public string AvgTempInC { get; set; }
         public List<WeatherForecast> Data { get; set; }
     }
 
@@ -13,6 +16,7 @@ namespace weatherforecast.Model.ResponseDto
         public DateTime? TimeStamp { get; set; }
         public double TemperatureInC { get; set; }
         public double TemperatureInF { get; set; }
+        public double deltaInC { get; set; }
     }
 
     public class MultiLocWeatherForecast : BaseResponse
@@ -25,6 +29,9 @@ namespace weatherforecast.Model.ResponseDto
     public class MultiLocData
     {
         public string location { get; set; }
+        public string MinTempInC { get; set; }
+        public string MaxTempInC { get; set; }
+        public string AvgTempInC { get; set; }
         public List<WeatherForecast> LocationForecasts { get; set; }
     }
 }

@@ -5,8 +5,7 @@ export class FetchData extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { loc:[],locNames:[], timeLineValue: "", forecasts: [], postsPerPage: 24,
-       currentPage: 1, loading: true, locations: [], locLoading: true  };
+    this.state = { loc:[],locNames:[], timeLineValue: "", forecasts: [], loading: true, locations: [], locLoading: true  };
     this.handleTimeLineChange = this.handleTimeLineChange.bind(this);
     this.handleLocChange = this.handleLocChange.bind(this);
     //this.handleDestinationChange = this.handleDestinationChange.bind(this);
@@ -28,105 +27,90 @@ export class FetchData extends Component {
     );
   }
 
-  renderForecastData(forecasts) {
-      const { postsPerPage, currentPage } = this.state;
-      const indexOfLastPage = currentPage * postsPerPage;
-      const indexOfFirstPage = indexOfLastPage - postsPerPage;
-      const currentPosts = forecasts.data.slice(indexOfFirstPage, indexOfLastPage)
-      
-    return ( <table className='table table-striped' aria-labelledby="tabelLabel">
-                <thead>
+  renderForecastData(forecasts) {    
+    return (
+            <div>
+                <table className='table table-striped' aria-labelledby="tabelLabel">
                     <tr>
-                    <th>Date</th>
-                    <th>Location</th>
-                    <th>Temp. (C)</th>
-                    <th>Temp. (F)</th>                 
+                        <td>Location : {forecasts.location}</td><td></td>
+                        <td>Min Temp (C) : {forecasts.minTempInC}</td><td></td>
+                        <td>Max Temp (C) : {forecasts.maxTempInC}</td><td></td>
+                        <td>Avg Temp (C) : {forecasts.avgTempInC}</td><td></td>
                     </tr>
-                </thead>          
-            <tbody>   
-               {
-                  currentPosts.map(forecast =>
-                               <tr key={forecast.date}>
-                                   <td>{forecast.timeStamp}</td>
-                                   <td>{forecast.location}</td>
-                                   <td>{forecast.temperatureInC}</td>
-                                   <td>{forecast.temperatureInF}</td>                               
-                               </tr>)
-               }
-           </tbody>
-      </table>
+                </table>
+            
+                <table className='table table-striped' aria-labelledby="tabelLabel">             
+                    <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Temp. (C)</th>
+                                <th>Temp. (F)</th>                 
+                            </tr>
+                        </thead>          
+                    <tbody>   
+                       {
+                          forecasts.data.map(forecast =>
+                                       <tr key={forecast.date}>
+                                           <td>{forecast.timeStamp}</td>
+                                           <td>{forecast.temperatureInC}</td>
+                                           <td>{forecast.temperatureInF}</td>                               
+                                       </tr>)
+                       }
+                   </tbody>
+              </table>
+      </div>
     );
   }
 
-   renderMultiLocForecastData(forecasts) {
-     
-    
-    return ( <table>
+   renderMultiLocForecastData(forecasts) {    
+    return ( <div>
            {
                 forecasts.data.map(forecast =>
-                    <table className='table table-striped' aria-labelledby="tabelLabel">
-                        <thead>
-                          <tr>
-                            <th>Date</th>
-                            <th>Location</th>
-                            <th>Temp. (C)</th>
-                            <th>Temp. (F)</th>                 
-                          </tr>
-                        </thead>  
-                        <tbody>
-                        {forecast.locationForecasts.map(x=>
-                            <tr key={x.date}>
-                                <td>{x.timeStamp}</td>
-                                <td>{x.location}</td>
-                                <td>{x.temperatureInC}</td>
-                                <td>{x.temperatureInF}</td>                               
-                            </tr>)}
-                        </tbody>
+                    <table>
+                        <table class="table table-bordered ">
+                            <tr>
+                                <td>Location : {forecast.location}</td><td></td>
+                                <td>Min Temp (C) : {forecast.minTempInC}</td><td></td>
+                                <td>Max Temp (C) : {forecast.maxTempInC}</td><td></td>
+                                <td>Avg Temp (C) : {forecast.avgTempInC}</td><td></td>
+                            </tr>
+                        </table>
+                        <table class="table table-bordered ">
+                            <thead>
+                              <tr>
+                                    <th>Date</th>
+                                    <th>Temp. (C)</th>
+                                    <th>Temp. (F)</th>
+                                    <th>Delta Temp. (C)</th>
+                              </tr>
+                            </thead>  
+                            <tbody>
+                            {forecast.locationForecasts.map(x=>
+                                <tr key={x.date}>
+                                    <td>{x.timeStamp}</td>
+                                    <td>{x.temperatureInC}</td>
+                                    <td>{x.temperatureInF}</td>
+                                    <td>{x.deltaInC}</td>
+                                </tr>)}
+                            </tbody>
+                        </table>
                     </table>)
            }
-           </table>
+           </div>
     );
   }
-
- 
-  showPagination = () => {
-     const { postsPerPage, forecasts } = this.state;
-     const pageNumbers = [];
-     const totalPosts = forecasts.length;
-
-     for(let i = 1; i<=Math.ceil(totalPosts/postsPerPage); i++){
-       pageNumbers.push(i)
-     }
-
-     const pagination = (pageNumbers) => {
-       this.setState({currentPage: pageNumbers})
-     }
-
-     return(
-       <nav>
-       <ul className="pagination">
-       {pageNumbers.map(number => (
-         <li key={number} className={this.state.currentPage === number ? 'page-item active' : 'page-item' }>
-         <button onClick={()=> pagination(number)} className="page-link"> {number} </button>
-         </li>
-       ))}
-       </ul>
-       </nav>
-     )
-
-
-   }
 
    handleTimeLineChange=(event)=>{
         this.setState({timeLineValue: event.target.value});
-        this.setState({ loading: true });
+        
    }
 
    handleLocChange=(event)=>{
         const values = [...event.target.selectedOptions].map(opt => opt.value);
         const names = [...event.target.selectedOptions].map(opt => opt.text);
         this.setState({loc: values});
-        this.setState({locNames: names}) 
+        this.setState({locNames: names});
+        this.setState({ loading: true });
    }
 
 
@@ -137,37 +121,39 @@ export class FetchData extends Component {
       :  this.renderLocationData(this.state.locations);
 
     return (
-      <div>
-        <h1 id="tabelLabel" >Weather forecast</h1>
-        <p>This component demonstrates fetching data from the server.</p>        
-        <table class="table table-bordered ">
-            <tbody>
-                <tr>
-                    <td>Enter the Location Source</td>
-                    <td>{locContent }</td>                    
-                    <td>TimeLine</td>
-                    <td>
-                        <select onChange={this.handleTimeLineChange} >
-                            <option value="Select">--Select--</option>
-                            <option value="minutely">Minutely</option>
-                            <option value="hourly">Hourly</option>
-                            <option value="daily">Daily</option>
-                        </select>
-                    </td>
-                    <td><button id="search" onClick={this.populateWeatherData}>Search</button></td>
-                </tr>
-            </tbody>
-        </table>
-        
-        <br /><br />
-        {  
-            this.state.loading
-                ? <p><em>Loading...</em></p>
-                : this.state.loc.length <= 1 ? this.renderForecastData(this.state.forecasts):
-                this.renderMultiLocForecastData(this.state.forecasts)
-                  
-            /*this.showPagination()*/
-        }
+        <div>
+          <div>
+            <h1 id="tabelLabel" >Weather forecast</h1>
+            <p>This component demonstrates fetching data from the server.</p>        
+            <table class="table table-bordered ">
+                <tbody>
+                    <tr>
+                        <td>Enter the Location Source</td>
+                        <td>{locContent }</td>                    
+                        <td>TimeLine</td>
+                        <td>
+                            <select onChange={this.handleTimeLineChange} >
+                                <option value="Select">--Select--</option>
+                                <option value="minutely">Minutely</option>
+                                <option value="hourly">Hourly</option>
+                                <option value="daily">Daily</option>
+                            </select>
+                        </td>
+                        <td><button id="search" onClick={this.populateWeatherData}>Search</button></td>
+                    </tr>
+                </tbody>
+            </table>
+            </div>
+
+            <div>
+            <br /><br />
+            {  
+                this.state.loading
+                    ? <p><em>Loading...</em></p>
+                    : this.state.loc.length <= 1 ? this.renderForecastData(this.state.forecasts):
+                    this.renderMultiLocForecastData(this.state.forecasts)
+            }
+          </div>
       </div>
     );
   }
