@@ -1,18 +1,22 @@
 import React, { Component } from 'react';
 import { Container } from 'reactstrap';
-import { NavMenu } from './NavMenu';
+import NavMenu from './NavMenu';
+import LocationSearch from './LocationSearch';
 
-export class Layout extends Component {
-  static displayName = Layout.name;
-
-  render() {
+function Layout(props){
+    //const [cookies, setCookie] = useCookies(["user"]);
+    
     return (
-      <div>
+      <div style={{ "background-color": "#f5f5f2","width":"1500px", "margin":"0 auto"}}>        
+        <LocationSearch />
         <NavMenu />
-        <Container>
-          {this.props.children}
+        <Container fluid>
+          { props.children}
         </Container>
       </div>
     );
-  }
+  
 }
+
+
+export default Layout;

@@ -35,3 +35,42 @@ code {
 .dropdown:hover .dropdown-content {
     display: block;
 }
+
+
+/* Create a top navigation bar with a black background color  */
+.topnav {
+    background-color: #3a4a41;
+    overflow: hidden;
+    border-radius:10px;
+}
+
+/* Style the links inside the navigation bar */
+.topnav a {
+    float: left;
+    color: #171616;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 17px;
+    font-weight:500;
+}
+
+/* Create a right-aligned (split) link inside the navigation bar */
+    .topnav a.split {
+        float: right;
+        background-color: #171616;
+        color: white;
+    }
+
+
+/* Change the color of links on hover */
+    .topnav a:hover {
+        background-color: #171616;
+        color: white;
+    }
+
+/* Add a color to the active/current link */
+.topnav a.active {
+    background-color: #171616;
+    color: black;
+}

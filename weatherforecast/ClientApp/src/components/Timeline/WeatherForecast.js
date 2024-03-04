@@ -1,19 +1,14 @@
 import React, { Component } from 'react';
-import 'react-select/dist/react-select.css';
-import 'react-virtualized/styles.css';
-import 'react-virtualized-select/styles.css';
+import Select from "react-select";
 
-import VirtualizedSelect from 'react-virtualized-select';
-
-export class FetchData extends Component {
-  static displayName = FetchData.name;
+export class WeatherForecast extends Component {
+  static displayName = WeatherForecast.name;
 
   constructor(props) {
     super(props);
-    this.state = { loc:[],locNames:[], timeLineValue: "", forecasts: [], loading: true, locations: [], locLoading: true  };
-    this.handleTimeLineChange = this.handleTimeLineChange.bind(this);
+    console.log(props);
+    this.state = { loc:[],locNames:[], timeLineValue: props.timeline, forecasts: [], loading: true, locations: [], locLoading: true  };
     this.handleLocChange = this.handleLocChange.bind(this);
-    //this.handleDestinationChange = this.handleDestinationChange.bind(this);
   }
 
   componentDidMount() {
@@ -25,7 +20,7 @@ export class FetchData extends Component {
        <select class="form-select" aria-label="Default select example" onChange={this.handleLocChange} multiple>
            <option value="Select" >--Select--</option>
             { 
-                locations.locResponse.map(x=>
+                locations.locResponse.map(x=>                          
                             <option value={x.latLong}>{x.name}</option>)
             }
        </select>
@@ -34,35 +29,38 @@ export class FetchData extends Component {
 
   renderForecastData(forecasts) {    
     return (
-            <div>            
-                <table className='table table-striped' aria-labelledby="tabelLabel">
-                    <tr>
-                        <td>Location : {forecasts.location}</td><td></td>
-                        <td>Min Temp (C) : {forecasts.minTempInC}</td><td></td>
-                        <td>Max Temp (C) : {forecasts.maxTempInC}</td><td></td>
-                        <td>Avg Temp (C) : {forecasts.avgTempInC}</td><td></td>
-                    </tr>
-                </table>
-            
-                <table className='table table-striped' aria-labelledby="tabelLabel">             
-                    <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Temp. (C)</th>
-                                <th>Temp. (F)</th>                 
-                            </tr>
-                        </thead>          
-                    <tbody>   
-                       {
-                          forecasts.data.map(forecast =>
-                                       <tr key={forecast.date}>
-                                           <td>{forecast.timeStamp}</td>
-                                           <td>{forecast.temperatureInC}</td>
-                                           <td>{forecast.temperatureInF}</td>                               
-                                       </tr>)
-                       }
-                   </tbody>
-              </table>
+            <div>  
+                <div>
+                    <table className='table table-bordered'>
+                        <tr>
+                            <td><strong>Location : </strong> {forecasts.location}</td>
+                            <td><strong>Min Temp (C) : </strong> {forecasts.minTempInC}</td>
+                            <td><strong>Max Temp (C) : </strong> {forecasts.maxTempInC}</td>
+                            <td><strong>Avg Temp (C) : </strong> {forecasts.avgTempInC}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div>
+                    <table className='table table-bordered'>             
+                        <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Temp. (C)</th>
+                                    <th>Temp. (F)</th>                 
+                                </tr>
+                            </thead>          
+                        <tbody>   
+                           {
+                              forecasts.data.map(forecast =>
+                                           <tr key={forecast.date}>
+                                               <td>{forecast.timeStamp}</td>
+                                               <td>{forecast.temperatureInC}</td>
+                                               <td>{forecast.temperatureInF}</td>                               
+                                           </tr>)
+                           }
+                       </tbody>
+                  </table>
+              </div>
       </div>
     );
   }
@@ -75,10 +73,10 @@ export class FetchData extends Component {
                         <div>
                             <table class="table table-bordered ">
                                 <tr>
-                                    <td><strong>Location : </strong> {forecast.location}</td><td></td>
-                                    <td><strong>Min Temp (C) : </strong> {forecast.minTempInC}</td><td></td>
-                                    <td><strong>Max Temp (C) : </strong> {forecast.maxTempInC}</td><td></td>
-                                    <td><strong>Avg Temp (C) : </strong> {forecast.avgTempInC}</td><td></td>
+                                    <td><strong>Location : </strong> {forecast.location}</td>
+                                    <td><strong>Min Temp (C) : </strong> {forecast.minTempInC}</td>
+                                    <td><strong>Max Temp (C) : </strong> {forecast.maxTempInC}</td>
+                                    <td><strong>Avg Temp (C) : </strong> {forecast.avgTempInC}</td>
                                 </tr>
                             </table>
                         </div>
@@ -109,11 +107,6 @@ export class FetchData extends Component {
     );
   }
 
-   handleTimeLineChange=(event)=>{
-        this.setState({timeLineValue: event.target.value});
-        
-   }
-
    handleLocChange=(event)=>{
         const values = [...event.target.selectedOptions].map(opt => opt.value);
         const names = [...event.target.selectedOptions].map(opt => opt.text);
@@ -121,7 +114,6 @@ export class FetchData extends Component {
         this.setState({locNames: names});
         this.setState({ loading: true });
    }
-
 
   render() {
 
@@ -131,25 +123,15 @@ export class FetchData extends Component {
 
     return (
         <div>
-          <div>
+          <div>           
            
-            <h1 id="tabelLabel" >Weather forecast</h1>
-            <p>This component demonstrates fetching data from the server.</p>        
-            <table style={{ width:"100%"}}>
+            <br />
+            <table class="table">
                 <tbody>
-                    <tr style={{ textalign:"centre", width:"100%"}}>
-                        <td style={{ width:"15%"}}> <strong>Enter the Location</strong> </td>
-                        <td style={{ width:"30%"}}>{locContent }</td>                    
-                        <td style={{ width:"15%"}}> <strong>TimeLine</strong> </td>
-                        <td style={{ width:"30%"}}>
-                            <select class="form-select" onChange={this.handleTimeLineChange} >
-                                <option value="Select">--Select--</option>
-                                <option value="minutely">Minutely</option>
-                                <option value="hourly">Hourly</option>
-                                <option value="daily">Daily</option>
-                            </select>
-                        </td>
-                        <td style={{ width:"20%"}}><button class="btn-primary" id="search" onClick={this.populateWeatherData}>Search</button></td>
+                    <tr>
+                        <td class="text-center"> <strong>Enter the Location</strong> </td>
+                        <td class="text-center">{locContent }</td>                    
+                        <td class="text-center"><button class="btn-primary" id="search" onClick={this.populateWeatherData}>Search</button></td>
                     </tr>
                 </tbody>
             </table>

@@ -31,6 +31,28 @@
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="ClientApp\src\components\Timeline\Daily.js" />
+    <None Remove="ClientApp\src\components\Timeline\Hourly.js" />
+    <None Remove="ClientApp\src\components\Timeline\LocationSearch.js" />
+    <None Remove="ClientApp\src\components\Timeline\Minutely.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="ClientApp\src\components\LocationSearch.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ClientApp\src\components\Timeline\Daily.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ClientApp\src\components\Timeline\Hourly.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ClientApp\src\components\Timeline\Minutely.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
     <!-- Ensure Node.js is installed -->
     <Exec Command="node --version" ContinueOnError="true">

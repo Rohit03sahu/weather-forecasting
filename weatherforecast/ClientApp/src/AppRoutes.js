@@ -1,19 +1,24 @@
-import { Counter } from "./components/Counter";
-import { FetchData } from "./components/FetchData";
-import { Home } from "./components/Home";
+import { WeatherForecast } from "./components/Timeline/WeatherForecast";
+import Daily from "./components/Timeline/Daily";
+import Hourly from "./components/Timeline/Hourly";
+import Minutely from "./components/Timeline/Minutely";
 
 const AppRoutes = [
+ /* {
+    path: '/weather-forecast',
+    element: <WeatherForecast />
+  },*/
   {
-    index: true,
-    element: <Home />
+    path: '/weather-forecast/daily',
+    element: <Daily />
   },
   {
-    path: '/counter',
-    element: <Counter />
-  },
-  {
-    path: '/fetch-data',
-    element: <FetchData />
+    path: '/weather-forecast/hourly',
+    element: <Hourly />
+  }
+  ,{
+    path: '/weather-forecast/minutely',
+    element: <Minutely />
   }
 ];
 
